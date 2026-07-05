@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GenLayer AI SLA Monitor</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f7f2;color:#171717}
+    main{max-width:1040px;margin:auto;padding:36px 18px}
+    h1{margin:0 0 8px;font-size:32px}
+    p{color:#555;line-height:1.55}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    label{display:block;margin:16px 0 7px;font-weight:700}
+    input,textarea{width:100%;box-sizing:border-box;border:1px solid #cfd4ca;border-radius:8px;padding:12px;font:inherit;background:white}
+    textarea{min-height:190px;resize:vertical}
+    button,a{display:inline-flex;align-items:center;margin-top:16px;margin-right:8px;border:0;border-radius:8px;padding:11px 15px;background:#151515;color:white;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+    pre{min-height:92px;overflow:auto;border-radius:8px;background:#172026;color:#eef7f2;padding:14px}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>GenLayer AI SLA Monitor</h1>
+    <p>Build incident packets for AI-consensus SLA breach decisions.</p>
+    <div class="grid">
+      <section>
+        <label for="service">Service name</label>
+        <input id="service" value="Order API">
+        <label for="terms">SLA terms</label>
+        <textarea id="terms">Availability must be at least 99.9%, p95 latency below 800ms, and error rate below 0.1% per one-hour window.</textarea>
+        <label for="packet">Incident packet JSON</label>
+        <textarea id="packet">{
+  "window": "2026-07-05T08:00:00Z/2026-07-05T09:00:00Z",
+  "region": "ap-southeast-1",
+  "endpoint": "/v1/orders",
+  "availability_percent": 98.72,
+  "p95_latency_ms": 1840,
+  "error_rate_percent": 1.28,
+  "logs": "Elevated 5xx responses for 31 minutes after database failover.",
+  "operator_note": "Users could submit reads but order creation intermittently failed."
+}</textarea>
+        <button id="build">Build payload</button>
+        <a href="https://studio.genlayer.com/contracts" target="_blank" rel="noreferrer">Open Studio</a>
+      </section>
+      <section>
+        <label>Constructor args</label>
+        <pre id="constructor"></pre>
+        <label>submit_incident(packet_json) arg</label>
+        <pre id="incident"></pre>
+      </section>
+    </div>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    function render() {
+      $("constructor").textContent = JSON.stringify([$("service").value, $("terms").value], null, 2);
+      $("incident").textContent = JSON.stringify([$("packet").value], null, 2);
+    }
+    $("build").addEventListener("click", render);
+    render();
+  </script>
+</body>
+</html>
